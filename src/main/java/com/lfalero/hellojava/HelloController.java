@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class HelloController {
 
     @GetMapping(value = "/hello", produces = MediaType.APPLICATION_JSON_VALUE)
-    public UxResponseDto hello() {
+    public BsResponseDto hello() {
         String host = System.getenv().getOrDefault("HOSTNAME", "unknown");
         String description = "Hello world from host API BS";
-        return new UxResponseDto(host, description);
+        return new BsResponseDto(host, description);
     }
 }

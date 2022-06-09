@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class UxResponseDto {
+public class BsResponseDto {
 
     private String host;
     private String description;
