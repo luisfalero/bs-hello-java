@@ -6,7 +6,7 @@
 oc project <project-name>
 ```
 
-- Create project BS
+- Create app BS
 
 ```shell
 oc new-app --name=bs-hello-java \
