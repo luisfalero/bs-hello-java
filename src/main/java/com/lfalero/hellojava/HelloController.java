@@ -36,7 +36,9 @@ public class HelloController {
         SimpleDateFormat formatter = new SimpleDateFormat(dateFormat);
         try {
             date = formatter.parse(dateString);
-            log.info("Date = [{}]:", date);
+            log.info("Date = [{}]:", date.getTime());
+            log.info("Get Time = [{}]:", new Date(date.getTime()));
+
         } catch (Exception e) {
             log.error("Error when try to convert date with dateString = [{}], Stack Trace:", dateString, e);
         }
