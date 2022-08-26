@@ -29,18 +29,17 @@ public class HelloController {
     }
 
     @GetMapping(value = "/v1/date", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Date dateV1() {
+    public BsDateResponseDto dateV1() {
         String dateString = "19871104";
         String dateFormat = "yyyyMMdd";
         Date date = null;
         SimpleDateFormat formatter = new SimpleDateFormat(dateFormat);
-        log.info("SimpleDateFormat = [{}]:", formatter);
         try {
             date = formatter.parse(dateString);
             log.info("Date = [{}]:", date);
         } catch (Exception e) {
             log.error("Error when try to convert date with dateString = [{}], Stack Trace:", dateString, e);
         }
-        return date;
+        return new BsDateResponseDto(date);
     }
 }
