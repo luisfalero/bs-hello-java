@@ -1,10 +1,15 @@
 package com.lfalero.hellojava;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+@Slf4j
 @RestController
 @RequestMapping("bs")
 public class HelloController {
@@ -21,5 +26,21 @@ public class HelloController {
         String host = System.getenv().getOrDefault("HOSTNAME", "unknown");
         String description = "Hello world from host API v2 BS";
         return new BsResponseDto(host, description);
+    }
+
+    @GetMapping(value = "/v1/date", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Date dateV1() {
+        String dateString = "19871104";
+        String dateFormat = "yyyyMMdd";
+        Date date = null;
+        SimpleDateFormat formatter = new SimpleDateFormat(dateFormat);
+        log.info("SimpleDateFormat = [{}]:", formatter);
+        try {
+            date = formatter.parse(dateString);
+            log.info("Date = [{}]:", date);
+        } catch (Exception e) {
+            log.error("Error when try to convert date with dateString = [{}], Stack Trace:", dateString, e);
+        }
+        return date;
     }
 }
