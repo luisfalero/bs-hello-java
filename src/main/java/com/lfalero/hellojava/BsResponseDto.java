@@ -11,4 +11,5 @@ public class BsResponseDto {
 
     private String host;
     private String description;
+    private String version;
 }
