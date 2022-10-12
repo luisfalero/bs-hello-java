@@ -9,7 +9,9 @@ import lombok.Setter;
 @AllArgsConstructor
 public class BsEnvironmentResponseDto {
 
-    private String user;
-    private String password;
+    private String user1;
+    private String user2;
+    private String password1;
+    private String password2;
     private String version;
 }

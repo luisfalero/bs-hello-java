@@ -20,11 +20,17 @@ public class HelloController {
     @JsonFormat(shape = JsonFormat.Shape.NUMBER)
     BsDateResponseDto bsDateResponseDto;
 
-    @Value("${system.user}")
-    private String user;
+    @Value("${system.user1}")
+    private String user1;
 
-    @Value("${system.password}")
-    private String password;
+    @Value("${system.user2}")
+    private String user2;
+
+    @Value("${system.password1}")
+    private String password1;
+
+    @Value("${system.password2}")
+    private String password2;
 
     @GetMapping(value = "/v1/hello", produces = MediaType.APPLICATION_JSON_VALUE)
     public BsResponseDto helloV1() {
@@ -61,15 +67,15 @@ public class HelloController {
     @GetMapping(value = "/v1/environment", produces = MediaType.APPLICATION_JSON_VALUE)
     public BsEnvironmentResponseDto environmentV1() {
         log.info("Endpoint = [{}]:", "/v1/environment");
-        log.info("Message = [{}, {}]:", new Object[] {user, password});
-        return new BsEnvironmentResponseDto(user, password, "v1");
+        log.info("Message = [{}, {}, {}, {}]:", new Object[] {user1, user2, password1, password2});
+        return new BsEnvironmentResponseDto(user1, user2, password1, password2, "v1");
     }
 
     @GetMapping(value = "/v2/environment", produces = MediaType.APPLICATION_JSON_VALUE)
     public BsEnvironmentResponseDto environmentV2() {
         log.info("Endpoint = [{}]:", "/v2/environment");
-        log.info("Message = [{}, {}]:", new Object[] {user, password});
-        return new BsEnvironmentResponseDto(user, password, "v2");
+        log.info("Message = [{}, {}, {}, {}]:", new Object[] {user1, user2, password1, password2});
+        return new BsEnvironmentResponseDto(user1, user2, password1, password2, "v2");
     }
 
     private Date dateFormat() {

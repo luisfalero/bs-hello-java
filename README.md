@@ -16,14 +16,16 @@ oc project ${OCP4_PROJECT}
 
 ```shell
 oc create cm bs-hello-java \
-    --from-literal system.user="LUIS FALERO OTINIANO"
+    --from-literal system.user1="LUIS FALERO" \
+    --from-literal system.user2="JUAN PEREZ"
 ```
 
 - Create Secret
 
 ```shell
 oc create secret generic bs-hello-java \
-    --from-literal system.password="123LUIS456"
+    --from-literal system.password1="123JUAN456" \
+    --from-literal system.password2="123PEREZ456"
 ```
 
 - Create App BS
