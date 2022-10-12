@@ -1,25 +1,61 @@
 # BS HELLO JAVA
 
+- Login in OCP4
+
+```shell
+oc login -u ${OCP4_USER} -p ${OCP4_PASSWORD} ${OCP4_MASTER_API}
+```
+
 - Access project
 
 ```shell
-oc project <project-name>
+oc project ${OCP4_PROJECT}
 ```
 
-- Create app BS
+- Create ConfigMap
+
+```shell
+oc create cm bs-hello-java \
+    --from-literal system.user="LUIS FALERO OTINIANO"
+```
+
+- Create Secret
+
+```shell
+oc create secret generic bs-hello-java \
+    --from-literal system.password="123LUIS456"
+```
+
+- Create App BS
 
 ```shell
 oc new-app --name=bs-hello-java \
-    java:11~https://github.com/luisfalero/bs-hello-java.git \
+    java:8~https://github.com/luisfalero/bs-hello-java.git \
     --as-deployment-config
-
-oc logs -f bc/bs-hello-java
 ```
 
 - Access logs
 
 ```shell
 oc logs -f bc/bs-hello-java
+```
+
+- Referencing ConfigMap
+
+```shell
+oc set env dc/bs-hello-java --from cm/bs-hello-java
+```
+
+- Referencing Secret
+
+```shell
+oc set env dc/bs-hello-java --from secret/bs-hello-java
+```
+
+- Validate Environment
+
+```shell
+oc set env dc/bs-hello-java --list 
 ```
 
 - Expose Route HTTP
