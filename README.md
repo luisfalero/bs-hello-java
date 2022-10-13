@@ -42,22 +42,16 @@ oc new-app --name=bs-hello-java \
 oc logs -f bc/bs-hello-java
 ```
 
-- Referencing ConfigMap
+- Create .jar
 
 ```shell
-oc set env dc/bs-hello-java --from cm/bs-hello-java
+mvn clean -DskipTests install
 ```
 
-- Referencing Secret
+- Deploy in OCP4
 
 ```shell
-oc set env dc/bs-hello-java --from secret/bs-hello-java
-```
-
-- Validate Environment
-
-```shell
-oc set env dc/bs-hello-java --list 
+mvn clean -DskipTests oc:deploy -Popenshift
 ```
 
 - Expose Route HTTP

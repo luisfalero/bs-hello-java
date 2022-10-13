@@ -1,21 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
 	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.7.0</version>
-		<relativePath/> <!-- lookup parent from repository -->
-	</parent>
+
 	<groupId>com.lfalero</groupId>
 	<artifactId>bs-hello-java</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
+
 	<name>bs-hello-java</name>
-	<description>Demo project for Spring Boot</description>
+
 	<properties>
-		<java.version>1.8</java.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+		<!-- configure the Fuse version you want to use here -->
+		<fuse.bom.version>7.10.0.fuse-sb2-7_10_0-00014-redhat-00001</fuse.bom.version>
+		<docker.image.version>1.10</docker.image.version>
 	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.jboss.redhat-fuse</groupId>
+				<artifactId>fuse-springboot-bom</artifactId>
+				<version>${fuse.bom.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<!-- change dependencies -->
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -39,22 +55,157 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+	<!-- change dependencies -->
 
 	<build>
+		<defaultGoal>spring-boot:run</defaultGoal>
+
 		<plugins>
 			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.7.0</version>
 				<configuration>
-					<excludes>
-						<exclude>
-							<groupId>org.projectlombok</groupId>
-							<artifactId>lombok</artifactId>
-						</exclude>
-					</excludes>
+					<source>1.8</source>
+					<target>1.8</target>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.jboss.redhat-fuse</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>repackage</goal>
+						</goals>
+					</execution>
+				</executions>
+				<version>${fuse.bom.version}</version>
+			</plugin>
 		</plugins>
+
+		<pluginManagement/>
 	</build>
+
+	<repositories>
+		<repository>
+			<id>redhat-ga-repository</id>
+			<url>https://maven.repository.redhat.com/ga</url>
+			<releases />
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>redhat-ea-repository</id>
+			<url>https://maven.repository.redhat.com/earlyaccess/all</url>
+			<releases />
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+
+	<pluginRepositories>
+		<pluginRepository>
+			<id>redhat-ga-repository</id>
+			<url>https://maven.repository.redhat.com/ga</url>
+			<releases />
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</pluginRepository>
+		<pluginRepository>
+			<id>redhat-ea-repository</id>
+			<url>https://maven.repository.redhat.com/earlyaccess/all</url>
+			<releases />
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</pluginRepository>
+	</pluginRepositories>
+
+	<profiles>
+		<profile>
+			<id>openshift</id>
+			<properties>
+				<jkube.generator.from>registry.redhat.io/fuse7/fuse-java-openshift-rhel8:${docker.image.version}</jkube.generator.from>
+			</properties>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.jboss.redhat-fuse</groupId>
+						<artifactId>openshift-maven-plugin</artifactId>
+						<version>${fuse.bom.version}</version>
+						<configuration>
+							<enricher>
+								<excludes>
+									<exclude>fmp-openshift-route</exclude>
+								</excludes>
+							</enricher>
+							<generator>
+								<config>
+									<generator>
+										<config>
+											<vertx>
+												<from>openjdk:alpine</from>
+											</vertx>
+										</config>
+									</generator>
+									<java-exec>
+										<from>openjdk:alpine</from>
+										<mainClass>pe.com.banbif.as400.adapter.Application</mainClass>
+									</java-exec>
+								</config>
+							</generator>
+							<resources>
+								<labels>
+									<pod>
+										<property>
+											<name>com.company</name>
+											<value>Red_Hat</value>
+										</property>
+										<property>
+											<name>rht.prod_name</name>
+											<value>Red_Hat_Integration</value>
+										</property>
+										<property>
+											<name>rht.prod_ver</name>
+											<value>7.10</value>
+										</property>
+										<property>
+											<name>rht.comp</name>
+											<value>spring-boot-camel-xml</value>
+										</property>
+										<property>
+											<name>rht.comp_ver</name>
+											<value>${fuse.bom.version}</value>
+										</property>
+									</pod>
+								</labels>
+							</resources>
+						</configuration>
+						<executions>
+							<execution>
+								<goals>
+									<goal>resource</goal>
+									<goal>build</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>java11</id>
+			<properties>
+				<jkube.generator.from>registry.redhat.io/fuse7/fuse-java-openshift-jdk11-rhel8:${docker.image.version}</jkube.generator.from>
+			</properties>
+			<activation>
+				<jdk>[11,)</jdk>
+			</activation>
+		</profile>
+	</profiles>
 
 </project>

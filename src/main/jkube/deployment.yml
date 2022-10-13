@@ -1,0 +1,48 @@
+spec:
+  replicas: 1
+  template:
+    spec:
+#      volumes:
+#        - name: pcml-volume-claim
+#          persistentVolumeClaim:
+#            claimName: pcml-claim
+#      initContainers:
+#        - name: jkube-volume-permission
+#          image: busybox
+#          command:
+#            - ls
+#          volumeMounts:
+#            - name: pcml-volume-claim
+#              mountPath: /mnt/pcml
+      containers:
+        - resources:
+            limits:
+              cpu: 512m
+              memory: 512Mi
+            requests:
+              cpu: 10m
+              memory: 128Mi
+          env:
+            - name: SYSTEM_USER1
+              valueFrom:
+                configMapKeyRef:
+                  name: bs-hello-java
+                  key: system.user1
+            - name: SYSTEM_USER2
+              valueFrom:
+                configMapKeyRef:
+                  name: bs-hello-java
+                  key: system.user2
+            - name: SYSTEM_PASSWORD1
+              valueFrom:
+                secretKeyRef:
+                  name: bs-hello-java
+                  key: system.password1
+            - name: SYSTEM_PASSWORD2
+              valueFrom:
+                secretKeyRef:
+                  name: bs-hello-java
+                  key: system.password2
+#          volumeMounts:
+#            - name: pcml-volume-claim
+#              mountPath: /mnt/pcml
