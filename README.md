@@ -28,21 +28,7 @@ oc create secret generic bs-hello-java \
     --from-literal system.password2="123PEREZ456"
 ```
 
-- Create App BS
-
-```shell
-oc new-app --name=bs-hello-java \
-    java:8~https://github.com/luisfalero/bs-hello-java.git \
-    --as-deployment-config
-```
-
-- Access logs
-
-```shell
-oc logs -f bc/bs-hello-java
-```
-
-- Create .jar
+- Create .jar in local
 
 ```shell
 mvn clean -DskipTests install
@@ -52,16 +38,4 @@ mvn clean -DskipTests install
 
 ```shell
 mvn clean -DskipTests oc:deploy -Popenshift
-```
-
-- Expose Route HTTP
-
-```shell
-oc expose svc/bs-hello-java --name=bs-hello-java --port=8080
-```
-
-- Expose Route HTTPS
-
-```shell
-oc create route edge --service=bs-hello-java --port=8080
 ```
