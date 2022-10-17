@@ -32,15 +32,6 @@ public class HelloController {
     @Value("${system.password2}")
     private String password2;
 
-    @GetMapping(value = "/v1/hello", produces = MediaType.APPLICATION_JSON_VALUE)
-    public BsResponseDto helloV1() {
-        log.info("Endpoint = [{}]:", "/v1/hello");
-        String host = System.getenv().getOrDefault("HOSTNAME", "unknown");
-        String description = "Hello world from host API v1 BS";
-        log.info("Message = [{}, {}]:", new Object[] {host, description});
-        return new BsResponseDto(host, description, "v1");
-    }
-
     @GetMapping(value = "/v2/hello", produces = MediaType.APPLICATION_JSON_VALUE)
     public BsResponseDto helloV2() {
         log.info("Endpoint = [{}]:", "/v2/hello");
@@ -55,6 +46,15 @@ public class HelloController {
         log.info("Endpoint = [{}]:", "/v1/date");
         bsDateResponseDto = new BsDateResponseDto(this.dateFormat(), "v1");
         return bsDateResponseDto;
+    }
+
+    @GetMapping(value = "/v1/hello", produces = MediaType.APPLICATION_JSON_VALUE)
+    public BsResponseDto helloV1() {
+        log.info("Endpoint = [{}]:", "/v1/hello");
+        String host = System.getenv().getOrDefault("HOSTNAME", "unknown");
+        String description = "Hello world from host API v1 BS";
+        log.info("Message = [{}, {}]:", new Object[] {host, description});
+        return new BsResponseDto(host, description, "v1");
     }
 
     @GetMapping(value = "/v2/date", produces = MediaType.APPLICATION_JSON_VALUE)
