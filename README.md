@@ -71,3 +71,9 @@ oc expose svc/bs-hello-java --name=bs-hello-java --port=8080
 ```shell
 oc create route edge --service=bs-hello-java --port=8080
 ```
+
+- Checking the Health Status
+
+```shell
+curl ${URL}/actuator/health
+```
