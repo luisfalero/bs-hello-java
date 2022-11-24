@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.text.SimpleDateFormat;
@@ -31,6 +32,19 @@ public class HelloController {
 
     @Value("${system.password2}")
     private String password2;
+
+    @GetMapping(value = "/v1/timer", produces = MediaType.APPLICATION_JSON_VALUE)
+    public String timerV1(@RequestParam Integer millis) {
+        log.info("Endpoint = [{}]:", "/v1/timer");
+        try {
+            log.info("Message = [{}, {}]:", "TimerTask started", millis);
+            Thread.sleep(millis);
+            log.info("Message = [{}, {}]:", "TimerTask ended", millis);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return "TimerTask ended = ".concat(millis.toString());
+    }
 
     @GetMapping(value = "/v1/hello", produces = MediaType.APPLICATION_JSON_VALUE)
     public BsResponseDto helloV1() {
