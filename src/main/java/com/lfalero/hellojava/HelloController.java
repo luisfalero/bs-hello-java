@@ -2,6 +2,7 @@ package com.lfalero.hellojava;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,17 +10,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @Slf4j
 @RestController
 @RequestMapping("bs")
-
 public class HelloController {
 
     @JsonFormat(shape = JsonFormat.Shape.NUMBER)
     BsDateResponseDto bsDateResponseDto;
+
+    @Autowired
+    private RequestService requestService;
 
     @Value("${system.user1}")
     private String user1;
@@ -47,21 +51,23 @@ public class HelloController {
     }
 
     @GetMapping(value = "/v1/hello", produces = MediaType.APPLICATION_JSON_VALUE)
-    public BsResponseDto helloV1() {
+    public BsResponseDto helloV1(HttpServletRequest request) {
         log.info("Endpoint = [{}]:", "/v1/hello");
         String host = System.getenv().getOrDefault("HOSTNAME", "unknown");
         String description = "Hello world from host API v1 BS";
-        log.info("Message = [{}, {}]:", new Object[] {host, description});
-        return new BsResponseDto(host, description, "v1");
+        String clientIp = requestService.getClientIp(request);
+        log.info("Message = [{}, {}, {}]:", new Object[] {clientIp, host, description});
+        return new BsResponseDto(clientIp, host, description, "v1");
     }
 
     @GetMapping(value = "/v2/hello", produces = MediaType.APPLICATION_JSON_VALUE)
-    public BsResponseDto helloV2() {
+    public BsResponseDto helloV2(HttpServletRequest request) {
         log.info("Endpoint = [{}]:", "/v2/hello");
         String host = System.getenv().getOrDefault("HOSTNAME", "unknown");
         String description = "Hello world from host API v2 BS";
-        log.info("Message = [{}, {}]:", new Object[] {host, description});
-        return new BsResponseDto(host, description, "v2");
+        String clientIp = requestService.getClientIp(request);
+        log.info("Message = [{}, {}, {}]:", new Object[] {clientIp, host, description});
+        return new BsResponseDto(clientIp, host, description, "v2");
     }
 
     @GetMapping(value = "/v1/date", produces = MediaType.APPLICATION_JSON_VALUE)

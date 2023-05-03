@@ -9,6 +9,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class BsResponseDto {
 
+    private String clientIp;
     private String host;
     private String description;
     private String version;
