@@ -36,8 +36,8 @@ oc create secret generic bs-hello-java-v1 \
     --from-literal system.password2="Pwd02 V2" \
     --from-literal opentracing.jaeger.service-name="bs-hello-java-v1" \
     --from-literal opentracing.jaeger.const-sampler.decision="true" \
-    --from-literal opentracing.jaeger.sampler.param="1" \
-    --from-literal opentracing.jaeger.log-spans="false" \
+    --from-literal opentracing.jaeger.sampler.param="1.0" \
+    --from-literal opentracing.jaeger.log-spans="true" \
     --from-literal opentracing.jaeger.http-sender.url="http://jaeger-collector.istio-system.svc:14268/api/traces" \
     --from-literal opentracing.jaeger.enable-b3-propagation="true"
 ```
@@ -50,8 +50,8 @@ oc create secret generic bs-hello-java-v2 \
     --from-literal system.password2="Pwd02 V2" \
     --from-literal opentracing.jaeger.service-name="bs-hello-java-v2" \
     --from-literal opentracing.jaeger.const-sampler.decision="true" \
-    --from-literal opentracing.jaeger.sampler.param="1" \
-    --from-literal opentracing.jaeger.log-spans="false" \
+    --from-literal opentracing.jaeger.sampler.param="1.0" \
+    --from-literal opentracing.jaeger.log-spans="true" \
     --from-literal opentracing.jaeger.http-sender.url="http://jaeger-collector.istio-system.svc:14268/api/traces" \
     --from-literal opentracing.jaeger.enable-b3-propagation="true"
 ```
