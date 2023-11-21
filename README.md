@@ -86,6 +86,29 @@ curl https://${URL}/bs/v1/hello | jq
 curl https://${URL}/bs/v1/propagation?description=ServiceMesh | jq
 ```
 
+```shell
+oc -n istio-system edit istio-ingressgateway
+```
+
+```yaml
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: istio-ingressgateway
+spec:
+  host: istio-ingressgateway-istio-system.apps.xxxx.xxxx
+  to:
+    kind: Service
+    name: istio-ingressgateway
+    weight: 100
+  port:
+    targetPort: 8080
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+  wildcardPolicy: None
+```
+
 - Service Mesh
 
 ```shell
@@ -100,6 +123,7 @@ oc apply -f ./src/main/resources/yaml/istio/virtualservice.yaml -n ${OCP4_PROJEC
 curl https://${URL}/bs/v1/hello | jq
 curl https://${URL}/bs/v1/propagation?description=ServiceMesh | jq
 
-for X in {1..100}; do curl http://${URL}/bs/v1/propagation?description=ServiceMesh; done;
+for X in {1..100}; do curl https://${URL}/bs/v1/propagation?description=ServiceMesh; echo; done;
 ```
 
+##node-role.kubernetes.io/worker: ''
