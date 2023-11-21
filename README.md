@@ -59,9 +59,9 @@ oc create secret generic bs-hello-java-v2 \
 - Create App BS
 
 ```shell
-oc apply -f ./src/main/resources/yaml/deployment-v1.yaml -n ${OCP4_PROJECT}
-oc apply -f ./src/main/resources/yaml/deployment-v2.yaml -n ${OCP4_PROJECT}
-oc apply -f ./src/main/resources/yaml/service.yaml -n ${OCP4_PROJECT}
+oc apply -f ./src/main/resources/yaml/app/deployment-v1.yaml -n ${OCP4_PROJECT}
+oc apply -f ./src/main/resources/yaml/app/deployment-v2.yaml -n ${OCP4_PROJECT}
+oc apply -f ./src/main/resources/yaml/app/service.yaml -n ${OCP4_PROJECT}
 ```
 
 - Expose Route HTTP
@@ -79,9 +79,27 @@ oc create route edge --service=bs-hello-java --port=8080
 - Checking the Health Status
 
 ```shell
-export URL=$(oc get routes bs-hello-java -o jsonpath='{.spec.host}')
+export URL=$(oc -n ${OCP4_PROJECT} get routes bs-hello-java -o jsonpath='{.spec.host}')
 
 curl https://${URL}/actuator/health | jq
 curl https://${URL}/bs/v1/hello | jq
 curl https://${URL}/bs/v1/propagation?description=ServiceMesh | jq
 ```
+
+- Service Mesh
+
+```shell
+oc -n istio-system patch routes/istio-ingressgateway \
+  --patch '{"spec":{"tls":{"termination":"edge","insecureEdgeTerminationPolicy":"Redirect"}}}' --type=merge
+
+export URL=$(oc -n istio-system get routes istio-ingressgateway -o jsonpath='{.spec.host}')
+oc apply -f ./src/main/resources/yaml/istio/gateway.yaml -n ${OCP4_PROJECT}
+oc apply -f ./src/main/resources/yaml/istio/destinationrule.yaml -n ${OCP4_PROJECT}
+oc apply -f ./src/main/resources/yaml/istio/virtualservice.yaml -n ${OCP4_PROJECT}
+
+curl https://${URL}/bs/v1/hello | jq
+curl https://${URL}/bs/v1/propagation?description=ServiceMesh | jq
+
+for X in {1..100}; do curl http://${URL}/bs/v1/propagation?description=ServiceMesh; done;
+```
+

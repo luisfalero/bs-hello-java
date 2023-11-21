@@ -1,0 +1,27 @@
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: bs-hello-java-dr
+spec:
+  host: bs-hello-java
+  subsets:
+    - name: app-v1
+      labels:
+        app: bs-hello-java
+        version: v1
+    - name: app-v2
+      labels:
+        app: bs-hello-java
+        version: v2
+  #trafficPolicy:
+  #  outlierDetection:
+  #    consecutive5xxErrors: 1
+  #    interval: 1s
+  #    baseEjectionTime: 3m
+  #    maxEjectionPercent: 100
+  #  connectionPool:
+  #    http:
+  #      http1MaxPendingRequests: 1
+  #      maxRequestsPerConnection: 1
+  #    tcp:
+  #      maxConnections: 1
