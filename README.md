@@ -1,5 +1,11 @@
 # BS HELLO JAVA
 
+- Variables
+
+```shell
+source ocp4.config
+```
+
 - Login in OCP4
 
 ```shell
@@ -12,52 +18,50 @@ oc login -u ${OCP4_USER} -p ${OCP4_PASSWORD} ${OCP4_MASTER_API}
 oc project ${OCP4_PROJECT}
 ```
 
-- Create ConfigMap
+- Compiliar
 
 ```shell
-oc create cm bs-hello-java \
-    --from-literal system.user1="LUIS FALERO" \
-    --from-literal system.user2="JUAN PEREZ"
+mvn clean install
+podman build -t quay.io/${OCP4_QUAY_USER}/bs-hello-java:1.0 .
+podman push quay.io/${OCP4_QUAY_USER}/bs-hello-java:1.0
 ```
 
 - Create Secret
 
 ```shell
-oc create secret generic bs-hello-java \
-    --from-literal system.password1="123JUAN456" \
-    --from-literal system.password2="123PEREZ456"
+oc create secret generic bs-hello-java-v1 \
+    --from-literal system.user1="User01 V1" \
+    --from-literal system.user2="User02 V1" \
+    --from-literal system.password1="Pwd01 V1" \
+    --from-literal system.password2="Pwd02 V2" \
+    --from-literal opentracing.jaeger.service-name="bs-hello-java-v1" \
+    --from-literal opentracing.jaeger.const-sampler.decision="true" \
+    --from-literal opentracing.jaeger.sampler.param="1" \
+    --from-literal opentracing.jaeger.log-spans="false" \
+    --from-literal opentracing.jaeger.http-sender.url="http://jaeger-collector.istio-system.svc:14268/api/traces" \
+    --from-literal opentracing.jaeger.enable-b3-propagation="true"
+```
+
+```shell
+oc create secret generic bs-hello-java-v2 \
+    --from-literal system.user1="User01 V2" \
+    --from-literal system.user2="User02 V2" \
+    --from-literal system.password1="Pwd01 V2" \
+    --from-literal system.password2="Pwd02 V2" \
+    --from-literal opentracing.jaeger.service-name="bs-hello-java-v2" \
+    --from-literal opentracing.jaeger.const-sampler.decision="true" \
+    --from-literal opentracing.jaeger.sampler.param="1" \
+    --from-literal opentracing.jaeger.log-spans="false" \
+    --from-literal opentracing.jaeger.http-sender.url="http://jaeger-collector.istio-system.svc:14268/api/traces" \
+    --from-literal opentracing.jaeger.enable-b3-propagation="true"
 ```
 
 - Create App BS
 
 ```shell
-oc new-app --name=bs-hello-java \
-    java:8~https://github.com/luisfalero/bs-hello-java.git \
-    --as-deployment-config
-```
-
-- Access logs
-
-```shell
-oc logs -f bc/bs-hello-java
-```
-
-- Referencing ConfigMap
-
-```shell
-oc set env dc/bs-hello-java --from cm/bs-hello-java
-```
-
-- Referencing Secret
-
-```shell
-oc set env dc/bs-hello-java --from secret/bs-hello-java
-```
-
-- Validate Environment
-
-```shell
-oc set env dc/bs-hello-java --list 
+oc apply -f ./src/main/resources/yaml/deployment-v1.yaml -n ${OCP4_PROJECT}
+oc apply -f ./src/main/resources/yaml/deployment-v2.yaml -n ${OCP4_PROJECT}
+oc apply -f ./src/main/resources/yaml/service.yaml -n ${OCP4_PROJECT}
 ```
 
 - Expose Route HTTP
@@ -75,5 +79,9 @@ oc create route edge --service=bs-hello-java --port=8080
 - Checking the Health Status
 
 ```shell
-curl ${URL}/actuator/health
+export URL=$(oc get routes bs-hello-java -o jsonpath='{.spec.host}')
+
+curl https://${URL}/actuator/health | jq
+curl https://${URL}/bs/v1/hello | jq
+curl https://${URL}/bs/v1/propagation?description=ServiceMesh | jq
 ```

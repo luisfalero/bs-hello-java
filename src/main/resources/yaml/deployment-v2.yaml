@@ -1,0 +1,80 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: bs-hello-java
+    version: v2
+  name: bs-hello-java-v2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bs-hello-java
+      version: v2
+  template:
+    metadata:
+      labels:
+        app: bs-hello-java
+        version: v2
+      annotations:
+        sidecar.istio.io/inject: "true"
+    spec:
+      containers:
+        - name: bs-hello-java
+          image: quay.io/rh_ee_lfalero/bs-hello-java:1.0
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+              name: http
+              protocol: TCP
+          env:
+            - name: SYSTEM_USER1
+              valueFrom:
+                secretKeyRef:
+                  name: bs-hello-java-v2
+                  key: system.user1
+            - name: SYSTEM_USER2
+              valueFrom:
+                secretKeyRef:
+                  name: bs-hello-java-v2
+                  key: system.user2
+            - name: SYSTEM_PASSWORD1
+              valueFrom:
+                secretKeyRef:
+                  name: bs-hello-java-v2
+                  key: system.password1
+            - name: SYSTEM_PASSWORD2
+              valueFrom:
+                secretKeyRef:
+                  name: bs-hello-java-v2
+                  key: system.password2
+            - name: JEAGER_SERVICE_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: bs-hello-java-v2
+                  key: opentracing.jaeger.service-name
+            - name: JEAGER_SAMPLER_TYPE
+              valueFrom:
+                secretKeyRef:
+                  name: bs-hello-java-v2
+                  key: opentracing.jaeger.const-sampler.decision
+            - name: JEAGER_SAMPLER_PARAM
+              valueFrom:
+                secretKeyRef:
+                  name: bs-hello-java-v2
+                  key: opentracing.jaeger.sampler.param
+            - name: JEAGER_LOG_SPANS
+              valueFrom:
+                secretKeyRef:
+                  name: bs-hello-java-v2
+                  key: opentracing.jaeger.log-spans
+            - name: JEAGER_ENDPOINT
+              valueFrom:
+                secretKeyRef:
+                  name: bs-hello-java-v2
+                  key: opentracing.jaeger.http-sender.url
+            - name: JEAGER_B3
+              valueFrom:
+                secretKeyRef:
+                  name: bs-hello-java-v2
+                  key: opentracing.jaeger.enable-b3-propagation

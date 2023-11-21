@@ -98,6 +98,15 @@ public class HelloController {
         return new BsEnvironmentResponseDto(user1, user2, password1, password2, "v2");
     }
 
+    @GetMapping(value = "/v1/propagation", produces = MediaType.APPLICATION_JSON_VALUE)
+    public BsResponseDto propagationV1(HttpServletRequest request, @RequestParam("description") String description) {
+        log.info("Endpoint = [{}]:", "/v1/propagation");
+        String host = System.getenv().getOrDefault("HOSTNAME", "unknown");
+        String clientIp = requestService.getClientIp(request);
+        log.info("Message = [{}, {}, {}]:", new Object[] {clientIp, host, description});
+        return new BsResponseDto(clientIp, host, description, "v1");
+    }
+
     private Date dateFormat() {
         String dateString = "19871104";
         String dateFormat = "yyyyMMdd";
