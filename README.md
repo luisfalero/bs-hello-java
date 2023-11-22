@@ -85,30 +85,6 @@ curl https://${URL}/actuator/health | jq
 curl https://${URL}/bs/v1/hello | jq
 curl https://${URL}/bs/v1/propagation?description=ServiceMesh | jq
 ```
-
-```shell
-oc -n istio-system edit istio-ingressgateway
-```
-
-```yaml
-kind: Route
-apiVersion: route.openshift.io/v1
-metadata:
-  name: istio-ingressgateway
-spec:
-  host: istio-ingressgateway-istio-system.apps.xxxx.xxxx
-  to:
-    kind: Service
-    name: istio-ingressgateway
-    weight: 100
-  port:
-    targetPort: 8080
-  tls:
-    termination: edge
-    insecureEdgeTerminationPolicy: Redirect
-  wildcardPolicy: None
-```
-
 - Service Mesh
 
 ```shell
