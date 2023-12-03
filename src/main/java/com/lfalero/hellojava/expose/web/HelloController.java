@@ -1,6 +1,11 @@
-package com.lfalero.hellojava;
+package com.lfalero.hellojava.expose.web;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.lfalero.hellojava.servicemesh.dao.RequestService;
+import com.lfalero.hellojava.servicemesh.model.BsDateResponseDto;
+import com.lfalero.hellojava.servicemesh.model.BsEnvironmentResponseDto;
+import com.lfalero.hellojava.servicemesh.model.BsResponseDto;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -96,6 +101,15 @@ public class HelloController {
         log.info("Endpoint = [{}]:", "/v2/environment");
         log.info("Message = [{}, {}, {}, {}]:", new Object[] {user1, user2, password1, password2});
         return new BsEnvironmentResponseDto(user1, user2, password1, password2, "v2");
+    }
+
+    @GetMapping(value = "/v1/propagation", produces = MediaType.APPLICATION_JSON_VALUE)
+    public BsResponseDto propagationV1(HttpServletRequest request, @RequestParam("description") String description) {
+        log.info("Endpoint = [{}]:", "/v1/propagation");
+        String host = System.getenv().getOrDefault("HOSTNAME", "unknown");
+        String clientIp = requestService.getClientIp(request);
+        log.info("Message = [{}, {}, {}]:", new Object[] {clientIp, host, description});
+        return new BsResponseDto(clientIp, host, description, "v1");
     }
 
     private Date dateFormat() {

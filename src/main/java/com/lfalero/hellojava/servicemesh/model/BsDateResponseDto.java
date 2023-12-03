@@ -1,4 +1,4 @@
-package com.lfalero.hellojava;
+package com.lfalero.hellojava.servicemesh.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
